@@ -6,9 +6,6 @@ import (
 	"math"
 )
 
-const EPSILON float64 = 1.0 / 10000
-const MAX_ITERATIONS int = 100
-
 // vec * num
 func calcProductVectorByNum(vec []float64, num float64) []float64 {
 	resultVec := make([]float64, len(vec))
@@ -32,16 +29,16 @@ func calcVectorDifference(vec1 []float64, vec2 []float64) []float64 {
 	return calcVectorSum(vec1, calcProductVectorByNum(vec2, -1))
 }
 
-func calcVectorRounding(vec []float64) []float64 {
+func calcVectorRounding(vec []float64, epsilon float64) []float64 {
 	resultVec := make([]float64, len(vec))
 	for i, el := range vec {
-		resultVec[i] = math.Round(el/EPSILON) * EPSILON
+		resultVec[i] = math.Round(el/epsilon) * epsilon
 	}
 	return resultVec
 }
 
 // Ax = b
-func gaussMethod(_A [][]float64, _b []float64) []float64 {
+func gaussMethod(_A [][]float64, _b []float64, epsilon float64) ([]float64, error) {
 	A := make([][]float64, len(_A))
 	for i, slice := range _A {
 		A[i] = make([]float64, len(slice))
@@ -71,10 +68,13 @@ func gaussMethod(_A [][]float64, _b []float64) []float64 {
 		for j := i + 1; j < len(A); j++ {
 			b[i] -= b[j] * A[i][j]
 		}
+		if math.Abs(A[i][i]) < epsilon {
+			return calcVectorRounding(b, epsilon), errors.New("the vector system is linearly dependent")
+		}
 		b[i] /= A[i][i]
 	}
-	b = calcVectorRounding(b)
-	return b
+	b = calcVectorRounding(b, epsilon)
+	return b, nil
 }
 
 func calcFnVec(fnVec []func([]float64) float64, X []float64) []float64 {
@@ -93,20 +93,23 @@ func calcJacobiMatrix(W [][]func([]float64) float64, X []float64) [][]float64 {
 	return resultMatrix
 }
 
-func newtonMethod(F []func([]float64) float64, W [][]func([]float64) float64, X []float64) ([]float64, int, error) {
+func newtonMethod(F []func([]float64) float64, W [][]func([]float64) float64, X []float64, epsilon float64, maxIterations int) ([]float64, int, error) {
 	newX := X
 	var iteration int = 0
 	for {
-		if iteration == MAX_ITERATIONS {
-			return calcVectorRounding(newX), iteration, errors.New("iteration limit exceeded")
+		if iteration == maxIterations {
+			return calcVectorRounding(newX, epsilon), iteration, errors.New("iteration limit exceeded")
 		} else {
 			iteration++
 		}
-		dX := gaussMethod(calcJacobiMatrix(W, newX), calcProductVectorByNum(calcFnVec(F, newX), -1))
+		dX, err := gaussMethod(calcJacobiMatrix(W, newX), calcProductVectorByNum(calcFnVec(F, newX), -1), epsilon)
+		if err != nil {
+			return calcVectorRounding(newX, epsilon), iteration, err
+		}
 		newX = calcVectorSum(newX, dX)
 		var calcContinueCondition bool = false
 		for _, dx := range dX {
-			if dx > EPSILON {
+			if dx > epsilon {
 				calcContinueCondition = true
 				break
 			}
@@ -115,12 +118,15 @@ func newtonMethod(F []func([]float64) float64, W [][]func([]float64) float64, X 
 		case true:
 			continue
 		case false:
-			return calcVectorRounding(newX), iteration, nil
+			return calcVectorRounding(newX, epsilon), iteration, nil
 		}
 	}
 }
 
 func main() {
+	const epsilon float64 = 1.0 / 10000
+	const maxIterations int = 100
+
 	A := [][]float64{
 		{3, 4, -9, 5},
 		{-15, -12, 50, -16},
@@ -130,7 +136,7 @@ func main() {
 	b := []float64{
 		-14, 44, 142, -76,
 	}
-	fmt.Println(gaussMethod(A, b))
+	fmt.Println(gaussMethod(A, b, epsilon))
 	F := []func([]float64) float64{
 		func(X []float64) float64 {
 			return math.Sin(2*X[0]-X[1]) - 1.2*X[0] - 0.4
@@ -161,5 +167,5 @@ func main() {
 		0.4,
 		-0.75,
 	}
-	fmt.Println(newtonMethod(F, W, X))
+	fmt.Println(newtonMethod(F, W, X, epsilon, maxIterations))
 }
