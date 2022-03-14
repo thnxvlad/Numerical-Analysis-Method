@@ -59,14 +59,14 @@ func newtonMethod(F []func([]float64) float64, W [][]func([]float64) float64, X 
 			return vectorRounding(newX, epsilon), err
 		}
 		newX = vectorSum(newX, dX)
-		var calcContinueCondition bool = false
+		var continueCondition bool = false
 		for _, dx := range dX {
 			if math.Abs(dx) > epsilon {
-				calcContinueCondition = true
+				continueCondition = true
 				break
 			}
 		}
-		switch calcContinueCondition {
+		switch continueCondition {
 		case true:
 			continue
 		case false:
@@ -109,14 +109,14 @@ func broydenMethod(F []func([]float64) float64, W [][]func([]float64) float64, X
 				1.0/math.Pow(frobeniusVectorNorm(dX), 2),
 			),
 		)
-		var calcContinueCondition bool = false
+		var continueCondition bool = false
 		for _, dx := range dX {
 			if math.Abs(dx) > epsilon {
-				calcContinueCondition = true
+				continueCondition = true
 				break
 			}
 		}
-		switch calcContinueCondition {
+		switch continueCondition {
 		case true:
 			continue
 		case false:
