@@ -16,7 +16,7 @@ func productVectorByNum(vec []float64, num float64) []float64 {
 // vec1 + vec2
 func vectorSum(vec1 []float64, vec2 []float64) []float64 {
 	resultVec := make([]float64, len(vec1))
-	for i, _ := range resultVec {
+	for i := range resultVec {
 		resultVec[i] = vec1[i] + vec2[i]
 	}
 	return resultVec
@@ -37,7 +37,7 @@ func vectorRounding(vec []float64, epsilon float64) []float64 {
 
 func areVectorsEqual(vec1 []float64, vec2 []float64, epsilon float64) bool {
 	if len(vec1) == len(vec2) {
-		for i, _ := range vec1 {
+		for i := range vec1 {
 			if math.Abs(vec1[i]-vec2[i]) > epsilon {
 				return false
 			}
@@ -66,10 +66,10 @@ func jacobiMatrix(W [][]func([]float64) float64, X []float64) [][]float64 {
 
 func matrixProduct(A [][]float64, B [][]float64) [][]float64 {
 	resultMatrix := make([][]float64, len(A))
-	for i, _ := range A {
+	for i := range A {
 		resultMatrix[i] = make([]float64, len(B[0]))
-		for j, _ := range A[i] {
-			for k, _ := range B[j] {
+		for j := range A[i] {
+			for k := range B[j] {
 				resultMatrix[i][k] += A[i][j] * B[j][k]
 			}
 		}
@@ -79,9 +79,9 @@ func matrixProduct(A [][]float64, B [][]float64) [][]float64 {
 
 func matrixSum(A [][]float64, B [][]float64) [][]float64 {
 	resultMatrix := make([][]float64, len(A))
-	for i, _ := range A {
+	for i := range A {
 		resultMatrix[i] = make([]float64, len(A[0]))
-		for j, _ := range A[i] {
+		for j := range A[i] {
 			resultMatrix[i][j] = A[i][j] + B[i][j]
 		}
 	}
@@ -90,9 +90,9 @@ func matrixSum(A [][]float64, B [][]float64) [][]float64 {
 
 func matrixTransposition(A [][]float64) [][]float64 {
 	resultMatrix := make([][]float64, len(A[0]))
-	for i, _ := range resultMatrix {
+	for i := range resultMatrix {
 		resultMatrix[i] = make([]float64, len(A))
-		for j, _ := range resultMatrix[i] {
+		for j := range resultMatrix[i] {
 			resultMatrix[i][j] = A[j][i]
 		}
 	}

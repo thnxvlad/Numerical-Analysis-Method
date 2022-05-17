@@ -23,7 +23,7 @@ func (nip *NewtonInterpolationPolynomial) New(f func(float64) float64, nodes []f
 
 	for i := 1; i < len(nodes); i++ {
 		table[i] = make([]float64, len(nodes)-i)
-		for j, _ := range table[i] {
+		for j := range table[i] {
 			table[i][j] = (table[i-1][j+1] - table[i-1][j]) / (nodes[j+i] - nodes[j])
 		}
 	}
@@ -47,7 +47,7 @@ func (nip *NewtonInterpolationPolynomial) String() string {
 				polynomial += " - "
 			}
 		}
-		polynomial += fmt.Sprint(math.Abs(c))
+		polynomial += fmt.Sprintf("%.8f", math.Abs(c))
 		for j := 0; j < i; j++ {
 			polynomial += " * (x"
 			if nip.gridNodes[j] > 0 {
@@ -55,7 +55,7 @@ func (nip *NewtonInterpolationPolynomial) String() string {
 			} else {
 				polynomial += " + "
 			}
-			polynomial += fmt.Sprint(math.Abs(c)) + ")"
+			polynomial += fmt.Sprintf("%.8f", math.Abs(nip.gridNodes[j])) + ")"
 		}
 	}
 
@@ -89,7 +89,7 @@ func (nip *NewtonInterpolationPolynomial) CalcDeviation(nodes []float64) float64
 func gridOfEquidistantNodes(a, b float64, n int) []float64 {
 	grid := make([]float64, n+1)
 
-	for i, _ := range grid {
+	for i := range grid {
 		grid[i] = a + float64(i)*(b-a)/float64(n)
 	}
 
@@ -99,7 +99,7 @@ func gridOfEquidistantNodes(a, b float64, n int) []float64 {
 func gridOfChebyshevNodes(a, b float64, n int) []float64 {
 	grid := make([]float64, n+1)
 
-	for i, _ := range grid {
+	for i := range grid {
 		grid[i] = (a+b)/2 + (b-a)/2*math.Cos(float64(2*i+1)*math.Pi/float64(2*(n+1)))
 	}
 

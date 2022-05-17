@@ -26,14 +26,14 @@ func main() {
 			fmt.Printf("#%d EquidistantNodes: %d\n", i, n)
 			var eqNip NewtonInterpolationPolynomial
 			eqNip.New(fn, gridOfEquidistantNodes(a, b, n))
-			//fmt.Println(eqNip.String())
+			fmt.Println(eqNip.String())
 			fmt.Printf("Deviation: %f\n", eqNip.CalcDeviation(gridOfEquidistantNodes(a, b, 100)))
 
 			fmt.Printf("#%d ChebyshevNodes: %d\n", i, n)
 			var chNip NewtonInterpolationPolynomial
 			chNip.New(fn, gridOfChebyshevNodes(a, b, n))
-			//fmt.Println(chNip.String())
-			fmt.Printf("Deviation: %f\n", chNip.CalcDeviation(gridOfChebyshevNodes(a, b, 100)))
+			fmt.Println(chNip.String())
+			fmt.Printf("Deviation: %f\n", chNip.CalcDeviation(gridOfEquidistantNodes(a, b, 100)))
 		}
 
 	}
