@@ -6,49 +6,36 @@ import (
 )
 
 func main() {
-	const epsilon float64 = 1.0 / 1e6
-	const maxIterations int = 100
+	F := []func(float64) float64{
+		func(x float64) float64 {
+			return math.Exp(math.Sin(x))
+		},
+		func(x float64) float64 {
+			return math.Abs(2*math.Sin(2*x) - 1)
+		},
+	}
 
-	A := [][]float64{
-		{3, 4, -9, 5},
-		{-15, -12, 50, -16},
-		{-27, -36, 73, 8},
-		{9, 12, -10, -16},
+	var a, b float64 = -2, 2
+
+	nodesAmount := []int{
+		5, 10, 15, 20,
 	}
-	b := []float64{
-		-14, 44, 142, -76,
+
+	for i, fn := range F {
+		for _, n := range nodesAmount {
+			fmt.Printf("#%d EquidistantNodes: %d\n", i, n)
+			var eqNip NewtonInterpolationPolynomial
+			eqNip.New(fn, gridOfEquidistantNodes(a, b, n))
+			//fmt.Println(eqNip.String())
+			fmt.Printf("Deviation: %f\n", eqNip.CalcDeviation(gridOfEquidistantNodes(a, b, 100)))
+
+			fmt.Printf("#%d ChebyshevNodes: %d\n", i, n)
+			var chNip NewtonInterpolationPolynomial
+			chNip.New(fn, gridOfChebyshevNodes(a, b, n))
+			//fmt.Println(chNip.String())
+			fmt.Printf("Deviation: %f\n", chNip.CalcDeviation(gridOfChebyshevNodes(a, b, 100)))
+		}
+
 	}
-	fmt.Println(gaussMethod(A, b, epsilon))
-	F := []func([]float64) float64{
-		func(X []float64) float64 {
-			return math.Cos(X[0]-X[1]) - X[0]*X[1] + 2
-		},
-		func(X []float64) float64 {
-			return math.Pow(X[0], 2) + X[0]*X[1] - math.Pow(X[1], 2) + 1.25
-		},
-	}
-	W := [][]func([]float64) float64{
-		{
-			func(X []float64) float64 {
-				return -math.Sin(X[0]-X[1]) - X[1]
-			},
-			func(X []float64) float64 {
-				return math.Sin(X[0]-X[1]) - X[0]
-			},
-		},
-		{
-			func(X []float64) float64 {
-				return 2*X[0] + X[1]
-			},
-			func(X []float64) float64 {
-				return X[0] - 2*X[1]
-			},
-		},
-	}
-	X := []float64{
-		-1,
-		-2.5,
-	}
-	fmt.Println(newtonMethod(F, W, X, epsilon, maxIterations))
-	fmt.Println(broydenMethod(F, W, X, epsilon, maxIterations))
+
 }
