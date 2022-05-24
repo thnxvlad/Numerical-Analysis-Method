@@ -8,6 +8,7 @@ import (
 type LeastSquaresApproximationPolynomial struct {
 	f            func(float64) float64
 	coefficients []float64
+	nodes        []float64
 }
 
 func (p *LeastSquaresApproximationPolynomial) New(f func(float64) float64, nodes []float64, n int, epsilon float64) error {
@@ -42,6 +43,7 @@ func (p *LeastSquaresApproximationPolynomial) New(f func(float64) float64, nodes
 
 	p.coefficients = c
 	p.f = f
+	p.nodes = nodes
 
 	return nil
 }
@@ -60,6 +62,7 @@ func (p *LeastSquaresApproximationPolynomial) String() string {
 	for i, c := range p.coefficients {
 		if i == 0 {
 			polynomial = fmt.Sprintf("%.3f", c)
+			continue
 		}
 
 		if c >= 0 {

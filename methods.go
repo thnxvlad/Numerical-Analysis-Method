@@ -124,3 +124,28 @@ func broydenMethod(F []func([]float64) float64, W [][]func([]float64) float64, X
 		}
 	}
 }
+
+func tridiagonalMatrixAlgorithm(_A [][]float64, _b []float64, epsilon float64) ([]float64, error) {
+	var N int = len(_A)
+
+	a := make([]float64, N)
+	b := make([]float64, N)
+	x := make([]float64, N)
+
+	var y float64 = _A[0][0]
+	a[0] = -_A[0][1] / y
+	b[0] = _b[0] / y
+
+	for i := 1; i < N-1; i++ {
+		y = _A[i][i] + _A[i][i-1]*a[i-1]
+		a[i] = _A[i][i+1] / y
+		b[i] = (_b[i] - _A[i][i-1]*b[i-1]) / y
+	}
+
+	x[N-1] = (_b[N-1] - _A[N-1][N-2]*b[N-2]) / (_A[N-1][N-1] + _A[N-1][N-2]*a[N-2])
+	for i := N - 2; i >= 0; i-- {
+		x[i] = a[i]*x[i+1] + b[i]
+	}
+
+	return x, nil
+}
